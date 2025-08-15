@@ -54,12 +54,14 @@ function App() {
 const AppContainer = styled.div`
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
   text-align: center;
 `;
 
 const Header = styled.div`
   margin-bottom: 20px;
+  @media (max-width: 768px) {
+    margin-bottom: 0px;
+  }
 `;
 
 const Title = styled.h1`
@@ -71,6 +73,9 @@ const CurrentBoard = styled.div`
   color: #666;
   font-size: 18px;
   font-weight: 500;
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const Controls = styled.div`
@@ -78,14 +83,23 @@ const Controls = styled.div`
   justify-content: center;
   align-items: center;
   gap: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
+  @media (max-width: 768px) {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
 `;
 
 const ControlGroup = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  label {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
 `;
 
 const Label = styled.label`
@@ -97,7 +111,7 @@ const BoardSelect = styled.select`
   padding: 8px 12px;
   border: 2px solid #ddd;
   border-radius: 4px;
-  background: white;
+  backgrsound: white;
   font-size: 16px;
   cursor: pointer;
 

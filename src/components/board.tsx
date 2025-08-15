@@ -3,15 +3,16 @@ import styled from "styled-components";
 
 import { calculateShadedCells } from "../utils/shader";
 import type { CellStyle, GameStatus } from "../types/board";
-import { Cell, CellBlock } from "./cell";
+import { Cell } from "./cell";
 import { checkWinCondition, getRegionBlocks } from "../utils/game";
+
+const SIZE_CONST = window.innerWidth < 400 ? "1.8em" : "3em";
 
 type BoardProps = {
   board: string[][];
 };
 
 const INDEX_BACKGROUND = "#efefef";
-const INDEX_BORDER = "#efefef";
 
 export function Board({ board }: BoardProps) {
   const [selectedCells, setSelectedCells] = useState<boolean[][]>(
@@ -62,15 +63,7 @@ export function Board({ board }: BoardProps) {
 
   function StatusBlock({ value }: { value: number }) {
     return (
-      <span
-        style={{
-          display: "flex",
-          width: "54px",
-          height: "50px",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <OuterBlock>
         {value == 0 ? (
           <></>
         ) : value == 2 ? (
@@ -84,7 +77,7 @@ export function Board({ board }: BoardProps) {
             style={{ color: "#dc3545", fontSize: "1.6em", fontWeight: "bold" }}
           ></i>
         )}
-      </span>
+      </OuterBlock>
     );
   }
 
@@ -93,42 +86,24 @@ export function Board({ board }: BoardProps) {
       {gameStatus === "won" && <WinMessage>You Win! 🎉</WinMessage>}
       <BoardContainer>
         <div style={{ display: "flex" }}>
-          <CellBlock
-            $cellstyle={{ t: false, r: false, b: false, l: false }}
-            $isShaded={false}
-            style={{
-              background: INDEX_BACKGROUND,
-              border: `2px solid ${INDEX_BORDER}`,
-            }}
-          ></CellBlock>
+          <OuterBlock></OuterBlock>
+
           {board[board.length - 1].map((_, colIndex) => (
-            <CellBlock
-              key={colIndex}
-              $cellstyle={{ t: false, r: false, b: false, l: false }}
-              $isShaded={false}
-              style={{
-                background: INDEX_BACKGROUND,
-                border: `2px solid ${INDEX_BORDER}`,
-              }}
-            >
-              {colIndex + 1}
-            </CellBlock>
+            <OuterBlock key={colIndex}>{colIndex + 1}</OuterBlock>
           ))}
         </div>
         {board.map((row, rowIndex) => (
           <>
             <div key={rowIndex} style={{ display: "flex" }}>
-              <CellBlock
+              <OuterBlock
                 key={rowIndex}
-                $cellstyle={{ t: false, r: false, b: false, l: false }}
-                $isShaded={false}
                 style={{
                   background: INDEX_BACKGROUND,
-                  border: `2px solid ${INDEX_BORDER}`,
+                  border: `2px solid none`,
                 }}
               >
                 {rowIndex + 1}
-              </CellBlock>
+              </OuterBlock>
               {row.map((_, colIndex) => (
                 <Cell
                   key={colIndex}
@@ -143,11 +118,7 @@ export function Board({ board }: BoardProps) {
           </>
         ))}
         <div style={{ display: "flex" }}>
-          <CellBlock
-            $cellstyle={{ t: false, r: false, b: false, l: false }}
-            $isShaded={false}
-            style={{ background: "none", padding: "2px" }}
-          ></CellBlock>
+          <OuterBlock style={{ background: "none" }}></OuterBlock>
           {board[board.length - 1].map((_, colIndex) => (
             <ColCheck key={colIndex} col={colIndex} />
           ))}
@@ -169,7 +140,6 @@ export function Board({ board }: BoardProps) {
 const BoardContainer = styled.div`
   display: inline-block;
   margin: auto;
-  padding: 12px;
 `;
 
 const WinMessage = styled.div`
@@ -178,8 +148,20 @@ const WinMessage = styled.div`
   font-weight: bold;
   color: #2d5a27;
   margin-bottom: 16px;
-  padding: 12px;
   background-color: #d4edda;
   border: 2px solid #2d5a27;
   border-radius: 8px;
+`;
+
+export const OuterBlock = styled.div`
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: ${SIZE_CONST};
+  height: ${SIZE_CONST};
+  color: black;
+  text-align: center;
+  line-height: ${SIZE_CONST};
+  border: 2px solid transparent;
 `;

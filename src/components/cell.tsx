@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import type { CellStyle } from "../types/board";
 
+const SIZE_CONST = window.innerWidth < 400 ? "1.8em" : "3em";
+
 export function Cell({
   isSelected,
   isShaded,
@@ -17,9 +19,9 @@ export function Cell({
       {isSelected ? (
         <i
           style={{
-            fontSize: "2em",
+            fontSize: window.innerWidth < 400 ? "1em" : "1.8em",
             position: "relative",
-            top: "5px",
+            top: window.innerWidth < 400 ? "0" : "5px",
             color: "#938c00ff",
           }}
           className="fa-solid fa-star"
@@ -37,8 +39,8 @@ export const CellBlock = styled.div<{
 }>`
   cursor: pointer;
   display: inline-block;
-  width: 50px;
-  height: 50px;
+  width: ${SIZE_CONST};
+  height: ${SIZE_CONST};
   border-top: ${(props) =>
     props.$cellstyle.t ? "2px solid black" : "2px solid #f0f0f0"};
   border-bottom: ${(props) =>
@@ -50,5 +52,5 @@ export const CellBlock = styled.div<{
   background-color: ${(props) => (props.$isShaded ? "#c4ddf4ff" : "white")};
   color: black;
   text-align: center;
-  line-height: 50px;
+  line-height: ${SIZE_CONST};
 `;
