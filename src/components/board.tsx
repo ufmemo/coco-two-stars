@@ -1,13 +1,17 @@
 import { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
-import { getRegionBlocks } from "../boards/board1";
+
 import { calculateShadedCells } from "../utils/shader";
-import type { CellStyle } from "../types/board";
-import { Cell } from "./cell";
+import type { CellStyle, GameStatus } from "../types/board";
+import { Cell, CellBlock } from "./cell";
+import { checkWinCondition, getRegionBlocks } from "../utils/game";
 
 type BoardProps = {
   board: string[][];
 };
+
+const INDEX_BACKGROUND = "#efefef";
+const INDEX_BORDER = "#efefef";
 
 export function Board({ board }: BoardProps) {
   const [selectedCells, setSelectedCells] = useState<boolean[][]>(
@@ -16,21 +20,27 @@ export function Board({ board }: BoardProps) {
   const [shadedCells, setShadedCells] = useState<boolean[][]>(
     board.map((row) => Array(row.length).fill(false))
   );
+  const [gameStatus, setGameStatus] = useState<GameStatus>("playing");
 
   const regions = useMemo(() => getRegionBlocks(board), [board]);
 
   useEffect(() => {
     const newShadedCells = calculateShadedCells(selectedCells, regions);
     setShadedCells(newShadedCells);
-  }, [selectedCells, regions]);
 
-  function isSelectionAllowed(row: number, col: number): boolean {
-    // Selections cannot be made on previously shaded cells
-    return !shadedCells[row][col];
-  }
+    // Check for win condition
+    const isWon = checkWinCondition(selectedCells, regions, board);
+
+    console.log("Win condition checked:", isWon);
+
+    setGameStatus(isWon ? "won" : "playing");
+  }, [selectedCells, regions, board]);
 
   function onSelect(row: number, col: number) {
-    if (!selectedCells[row][col] && !isSelectionAllowed(row, col)) return;
+    // Disable moves when game is won
+    if (gameStatus === "won") return;
+
+    if (!selectedCells[row][col] && shadedCells[row][col]) return;
 
     setSelectedCells((prev) => {
       const newSelectedCells = prev.map((row) => [...row]); // Deep copy
@@ -39,22 +49,111 @@ export function Board({ board }: BoardProps) {
     });
   }
 
+  function RowCheck({ row }: { row: number }) {
+    const checkedCount = selectedCells[row].filter(Boolean).length;
+    return <StatusBlock value={checkedCount} />;
+  }
+
+  function ColCheck({ col }: { col: number }) {
+    //if rows has 2 selection then set to true
+    const checkedCount = selectedCells.filter((row) => row[col]).length;
+    return <StatusBlock value={checkedCount} />;
+  }
+
+  function StatusBlock({ value }: { value: number }) {
+    return (
+      <span
+        style={{
+          display: "flex",
+          width: "54px",
+          height: "50px",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {value == 0 ? (
+          <></>
+        ) : value == 2 ? (
+          <i
+            className="fa-solid fa-check"
+            style={{ color: "#28a745", fontSize: "1.6em", fontWeight: "bold" }}
+          ></i>
+        ) : (
+          <i
+            className="fa-solid fa-xmark"
+            style={{ color: "#dc3545", fontSize: "1.6em", fontWeight: "bold" }}
+          ></i>
+        )}
+      </span>
+    );
+  }
+
   return (
-    <BoardContainer>
-      {board.map((row, rowIndex) => (
-        <div key={rowIndex}>
-          {row.map((_, colIndex) => (
-            <Cell
+    <div>
+      {gameStatus === "won" && <WinMessage>You Win! 🎉</WinMessage>}
+      <BoardContainer>
+        <div style={{ display: "flex" }}>
+          <CellBlock
+            $cellstyle={{ t: false, r: false, b: false, l: false }}
+            $isShaded={false}
+            style={{
+              background: INDEX_BACKGROUND,
+              border: `2px solid ${INDEX_BORDER}`,
+            }}
+          ></CellBlock>
+          {board[board.length - 1].map((_, colIndex) => (
+            <CellBlock
               key={colIndex}
-              cellStyle={cellStyle(rowIndex, colIndex)}
-              isSelected={selectedCells[rowIndex][colIndex]}
-              isShaded={shadedCells[rowIndex][colIndex]}
-              onSelect={() => onSelect(rowIndex, colIndex)}
-            />
+              $cellstyle={{ t: false, r: false, b: false, l: false }}
+              $isShaded={false}
+              style={{
+                background: INDEX_BACKGROUND,
+                border: `2px solid ${INDEX_BORDER}`,
+              }}
+            >
+              {colIndex + 1}
+            </CellBlock>
           ))}
         </div>
-      ))}
-    </BoardContainer>
+        {board.map((row, rowIndex) => (
+          <>
+            <div key={rowIndex} style={{ display: "flex" }}>
+              <CellBlock
+                key={rowIndex}
+                $cellstyle={{ t: false, r: false, b: false, l: false }}
+                $isShaded={false}
+                style={{
+                  background: INDEX_BACKGROUND,
+                  border: `2px solid ${INDEX_BORDER}`,
+                }}
+              >
+                {rowIndex + 1}
+              </CellBlock>
+              {row.map((_, colIndex) => (
+                <Cell
+                  key={colIndex}
+                  cellStyle={cellStyle(rowIndex, colIndex)}
+                  isSelected={selectedCells[rowIndex][colIndex]}
+                  isShaded={shadedCells[rowIndex][colIndex]}
+                  onSelect={() => onSelect(rowIndex, colIndex)}
+                />
+              ))}
+              {rowIndex < board.length && <RowCheck row={rowIndex} />}
+            </div>
+          </>
+        ))}
+        <div style={{ display: "flex" }}>
+          <CellBlock
+            $cellstyle={{ t: false, r: false, b: false, l: false }}
+            $isShaded={false}
+            style={{ background: "none", padding: "2px" }}
+          ></CellBlock>
+          {board[board.length - 1].map((_, colIndex) => (
+            <ColCheck key={colIndex} col={colIndex} />
+          ))}
+        </div>
+      </BoardContainer>
+    </div>
   );
 
   function cellStyle(row: number, col: number): CellStyle {
@@ -66,8 +165,21 @@ export function Board({ board }: BoardProps) {
     };
   }
 }
+
 const BoardContainer = styled.div`
   display: inline-block;
   margin: auto;
   padding: 12px;
+`;
+
+const WinMessage = styled.div`
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #2d5a27;
+  margin-bottom: 16px;
+  padding: 12px;
+  background-color: #d4edda;
+  border: 2px solid #2d5a27;
+  border-radius: 8px;
 `;

@@ -1,5 +1,3 @@
-import type { RegionMap } from "../types/board";
-
 export const board1 = [
   ["A", "A", "A", "A", "A", "A", "A", "A", "B", "B"],
   ["A", "A", "A", "A", "A", "A", "C", "A", "B", "B"],
@@ -12,19 +10,3 @@ export const board1 = [
   ["D", "J", "J", "J", "J", "J", "J", "J", "I", "I"],
   ["J", "J", "J", "J", "J", "J", "J", "J", "J", "I"],
 ];
-
-export function getRegionBlocks(board: string[][]): RegionMap {
-  const regions: RegionMap = {};
-
-  for (let row = 0; row < board.length; row++) {
-    for (let col = 0; col < board[row].length; col++) {
-      const cell = board[row][col];
-      if (!regions[cell]) {
-        regions[cell] = { cells: [] };
-      }
-      regions[cell].cells.push({ row, col });
-    }
-  }
-
-  return regions;
-}

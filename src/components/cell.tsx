@@ -14,12 +14,27 @@ export function Cell({
 }) {
   return (
     <CellBlock $cellstyle={cellStyle} onClick={onSelect} $isShaded={isShaded}>
-      {isSelected ? <i className="fa-solid fa-star"></i> : "\u00A0"}
+      {isSelected ? (
+        <i
+          style={{
+            fontSize: "2em",
+            position: "relative",
+            top: "5px",
+            color: "#938c00ff",
+          }}
+          className="fa-solid fa-star"
+        ></i>
+      ) : (
+        "\u00A0"
+      )}
     </CellBlock>
   );
 }
 
-const CellBlock = styled.div<{ $cellstyle: CellStyle; $isShaded: boolean }>`
+export const CellBlock = styled.div<{
+  $cellstyle: CellStyle;
+  $isShaded: boolean;
+}>`
   cursor: pointer;
   display: inline-block;
   width: 50px;

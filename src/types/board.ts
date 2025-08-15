@@ -8,3 +8,5 @@ export type RegionMap = {
 };
 
 export type CellStyle = { t: boolean; r: boolean; b: boolean; l: boolean };
+
+export type GameStatus = "playing" | "won";
