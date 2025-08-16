@@ -1,4 +1,4 @@
-export const board4 = [
+export const board04 = [
   ["A", "A", "A", "A", "A", "B", "B", "B", "B", "C"],
   ["A", "A", "A", "A", "A", "A", "B", "B", "B", "C"],
   ["D", "D", "D", "A", "A", "A", "B", "B", "B", "C"],
