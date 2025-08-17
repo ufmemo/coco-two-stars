@@ -1,50 +1,101 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import { calculateShadedCells } from "../utils/shader";
-import type { CellStyle, GameStatus } from "../types/board";
+import type { CellStyle } from "../types/board";
 import { Cell } from "./cell";
-import { checkWinCondition, getRegionBlocks } from "../utils/game";
+import {
+  checkWinCondition,
+  checkLossCondition,
+  getRegionBlocks,
+} from "../utils/game";
+import { useGameState } from "../hooks/useGameState";
+import { WinModal } from "./WinModal";
+import { LossModal } from "./LossModal";
 
 const SIZE_CONST = window.innerWidth < 400 ? "1.8em" : "3em";
 
 type BoardProps = {
   board: string[][];
+  boardId: string;
 };
 
 const INDEX_BACKGROUND = "#efefef";
 
-export function Board({ board }: BoardProps) {
-  const [selectedCells, setSelectedCells] = useState<boolean[][]>(
-    board.map((row) => Array(row.length).fill(false))
-  );
-  const [shadedCells, setShadedCells] = useState<boolean[][]>(
-    board.map((row) => Array(row.length).fill(false))
-  );
-  const [gameStatus, setGameStatus] = useState<GameStatus>("playing");
+export function Board({ board, boardId }: BoardProps) {
+  // Modal visibility state
+  const [showWinModal, setShowWinModal] = useState(false);
+  const [showLossModal, setShowLossModal] = useState(false);
+
+  // Use the custom hook for state management with persistence
+  const {
+    selectedCells,
+    gameStatus,
+    updateSelectedCells,
+    updateGameStatus,
+    resetState,
+    isLoading,
+    error,
+  } = useGameState(boardId, board);
 
   const regions = useMemo(() => getRegionBlocks(board), [board]);
 
+  // Calculate shaded cells based on current selected cells
+  const shadedCells = useMemo(() => {
+    return calculateShadedCells(selectedCells, regions);
+  }, [selectedCells, regions]);
+
+  // Check for win and loss conditions and update game status
   useEffect(() => {
-    const newShadedCells = calculateShadedCells(selectedCells, regions);
-    setShadedCells(newShadedCells);
-
-    // Check for win condition
     const isWon = checkWinCondition(selectedCells, regions, board);
+    const isLost = checkLossCondition(selectedCells, shadedCells);
 
-    console.log("Win condition checked:", isWon);
+    // Check if any cells are selected to determine if game has started
+    const hasSelectedCells = selectedCells.some((row) =>
+      row.some((cell) => cell)
+    );
 
-    setGameStatus(isWon ? "won" : "playing");
-  }, [selectedCells, regions, board]);
+    let newStatus: "not-started" | "won" | "lost" | "playing";
+    if (isWon) {
+      newStatus = "won";
+    } else if (isLost) {
+      newStatus = "lost";
+    } else if (hasSelectedCells) {
+      newStatus = "playing";
+    } else {
+      newStatus = "not-started";
+    }
+
+    // Only update if status changed to avoid unnecessary re-renders
+    if (gameStatus !== newStatus) {
+      updateGameStatus(newStatus);
+    }
+  }, [
+    selectedCells,
+    shadedCells,
+    regions,
+    board,
+    gameStatus,
+    updateGameStatus,
+  ]);
+
+  // Show modals based on game status
+  useEffect(() => {
+    if (gameStatus === "won") {
+      setShowWinModal(true);
+    } else if (gameStatus === "lost") {
+      setShowLossModal(true);
+    }
+  }, [gameStatus]);
 
   function onSelect(row: number, col: number) {
-    // Disable moves when game is won
-    if (gameStatus === "won") return;
+    // Disable moves when game is won or lost
+    if (gameStatus === "won" || gameStatus === "lost") return;
 
     if (!selectedCells[row][col] && shadedCells[row][col]) return;
 
-    setSelectedCells((prev) => {
-      const newSelectedCells = prev.map((row) => [...row]); // Deep copy
+    updateSelectedCells((prev) => {
+      const newSelectedCells = prev.map((rowArray) => [...rowArray]); // Deep copy
       newSelectedCells[row][col] = !newSelectedCells[row][col];
       return newSelectedCells;
     });
@@ -81,9 +132,50 @@ export function Board({ board }: BoardProps) {
     );
   }
 
+  // Modal handlers
+  const handleCloseWinModal = () => {
+    setShowWinModal(false);
+  };
+
+  const handleCloseLossModal = () => {
+    setShowLossModal(false);
+  };
+
+  const handlePlayAgain = () => {
+    setShowWinModal(false);
+    resetState();
+  };
+
+  const handleTryAgain = () => {
+    setShowLossModal(false);
+    resetState();
+  };
+
+  // Show loading state while restoring saved game
+  if (isLoading) {
+    return (
+      <LoadingContainer>
+        <LoadingMessage>Loading saved game...</LoadingMessage>
+      </LoadingContainer>
+    );
+  }
+
   return (
     <div>
-      {gameStatus === "won" && <WinMessage>You Win! 🎉</WinMessage>}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+
+      {/* Modals */}
+      <WinModal
+        isOpen={showWinModal}
+        onClose={handleCloseWinModal}
+        onPlayAgain={handlePlayAgain}
+      />
+      <LossModal
+        isOpen={showLossModal}
+        onClose={handleCloseLossModal}
+        onTryAgain={handleTryAgain}
+      />
+
       <BoardContainer>
         <div style={{ display: "flex" }}>
           <OuterBlock></OuterBlock>
@@ -93,8 +185,8 @@ export function Board({ board }: BoardProps) {
           ))}
         </div>
         {board.map((row, rowIndex) => (
-          <>
-            <div key={rowIndex} style={{ display: "flex" }}>
+          <div key={rowIndex}>
+            <div style={{ display: "flex" }}>
               <OuterBlock
                 key={rowIndex}
                 style={{
@@ -115,7 +207,7 @@ export function Board({ board }: BoardProps) {
               ))}
               {rowIndex < board.length && <RowCheck row={rowIndex} />}
             </div>
-          </>
+          </div>
         ))}
         <div style={{ display: "flex" }}>
           <OuterBlock style={{ background: "none" }}></OuterBlock>
@@ -142,15 +234,28 @@ const BoardContainer = styled.div`
   margin: auto;
 `;
 
-const WinMessage = styled.div`
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+`;
+
+const LoadingMessage = styled.div`
+  font-size: 18px;
+  color: #666;
+  font-style: italic;
+`;
+
+const ErrorMessage = styled.div`
   text-align: center;
-  font-size: 24px;
-  font-weight: bold;
-  color: #2d5a27;
-  margin-bottom: 16px;
-  background-color: #d4edda;
-  border: 2px solid #2d5a27;
+  font-size: 16px;
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 2px solid #dc3545;
   border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
 `;
 
 export const OuterBlock = styled.div`

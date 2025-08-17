@@ -50,3 +50,19 @@ export function checkWinCondition(
 
   return true;
 }
+
+export function checkLossCondition(
+  selectedCells: boolean[][],
+  shadedCells: boolean[][]
+): boolean {
+  // Check if all cells are either selected or shaded (no moves available)
+  for (let row = 0; row < selectedCells.length; row++) {
+    for (let col = 0; col < selectedCells[row].length; col++) {
+      // If a cell is neither selected nor shaded, moves are still available
+      if (!selectedCells[row][col] && !shadedCells[row][col]) {
+        return false;
+      }
+    }
+  }
+  return true;
+}

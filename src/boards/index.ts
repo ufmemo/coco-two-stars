@@ -46,22 +46,22 @@ export const boards: BoardData[] = [
   },
 
   {
-    id: "board06",
+    id: "board6",
     name: "Board 6",
     board: board06,
   },
   {
-    id: "board07",
+    id: "board7",
     name: "Board 7",
     board: board07,
   },
   {
-    id: "board08",
+    id: "board8",
     name: "Board 8",
     board: board08,
   },
   {
-    id: "board09",
+    id: "board9",
     name: "Board 9",
     board: board09,
   },
