@@ -1,3 +1,4 @@
+// done
 export const board02 = [
   ["A", "A", "A", "A", "A", "A", "B", "C", "C", "D"],
   ["E", "E", "E", "E", "A", "A", "B", "C", "D", "D"],
