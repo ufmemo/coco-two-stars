@@ -6,7 +6,10 @@ interface InstructionsModalProps {
   onClose: () => void;
 }
 
-export function InstructionsModal({ isOpen, onClose }: InstructionsModalProps) {
+export function Instructions2Modal({
+  isOpen,
+  onClose,
+}: InstructionsModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 

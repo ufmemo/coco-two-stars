@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { boards } from "../boards";
 import { BoardStatusIcon } from "./BoardStatusIcon";
 import { ResetAllButton } from "./ResetAllButton";
-import { InstructionsModal } from "./InstructionsModal";
+import { Instructions2Modal } from "./Instructions2Modal";
 import { getAllBoardStatuses } from "../utils/localStorage";
 import type { BoardStatus } from "../types/board";
 
@@ -105,7 +105,7 @@ export function Home() {
         )}
       </BoardGrid>
 
-      <InstructionsModal
+      <Instructions2Modal
         isOpen={showInstructions}
         onClose={() => setShowInstructions(false)}
       />

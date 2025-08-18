@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
 import { Board } from "./board";
-import { InstructionsModal } from "./InstructionsModal";
+import { Instructions2Modal } from "./Instructions2Modal";
 import { boards, type BoardData } from "../boards";
 import { clearGameState } from "../utils/localStorage";
 
@@ -64,7 +64,7 @@ export function BoardPage() {
         boardId={currentBoard.id}
       />
 
-      <InstructionsModal
+      <Instructions2Modal
         isOpen={showInstructions}
         onClose={() => setShowInstructions(false)}
       />
