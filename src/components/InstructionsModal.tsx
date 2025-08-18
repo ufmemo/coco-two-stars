@@ -75,9 +75,7 @@ export function InstructionsModal({ isOpen, onClose }: InstructionsModalProps) {
           <Section>
             <SectionTitle>🎯 Objective</SectionTitle>
             <SectionText>
-              Remove all tiles from the board by clicking on groups of 2 or more
-              connected tiles of the same color. Your goal is to clear the
-              entire board.
+              Win the game by adding stars in the right locations.
             </SectionText>
           </Section>
 
@@ -87,50 +85,32 @@ export function InstructionsModal({ isOpen, onClose }: InstructionsModalProps) {
               <Step>
                 <StepNumber>1.</StepNumber>
                 <StepText>
-                  Click on any tile that has at least one adjacent tile of the
-                  same color
+                  Click on empty tiles to add stars. Click it again to remove a
+                  star.
                 </StepText>
               </Step>
               <Step>
                 <StepNumber>2.</StepNumber>
                 <StepText>
-                  All connected tiles of the same color will be removed
+                  Stars cannot be added to tiles with stars on adjacent tiles
+                  (including diagonally adjacent tiles).
                 </StepText>
               </Step>
               <Step>
                 <StepNumber>3.</StepNumber>
                 <StepText>
-                  Remaining tiles will fall down due to gravity
+                  All sections (marked by solid black line) must have two stars.
                 </StepText>
               </Step>
               <Step>
                 <StepNumber>4.</StepNumber>
-                <StepText>
-                  Repeat until the board is clear or no more moves are possible
-                </StepText>
+                <StepText>All rows must have 2 stars.</StepText>
+              </Step>
+              <Step>
+                <StepNumber>5.</StepNumber>
+                <StepText>All columns must have 2 stars.</StepText>
               </Step>
             </StepList>
-          </Section>
-
-          <Section>
-            <SectionTitle>⭐ Winning</SectionTitle>
-            <SectionText>
-              Win by clearing all tiles from the board. If you get stuck with
-              isolated tiles (no adjacent tiles of the same color), you'll need
-              to start over with a new game.
-            </SectionText>
-          </Section>
-
-          <Section>
-            <SectionTitle>💡 Strategy Tips</SectionTitle>
-            <TipList>
-              <Tip>Plan ahead - removing tiles affects the entire column</Tip>
-              <Tip>
-                Look for large groups first to create more opportunities
-              </Tip>
-              <Tip>Be careful not to isolate tiles at the bottom</Tip>
-              <Tip>Sometimes it's better to leave smaller groups for later</Tip>
-            </TipList>
           </Section>
         </ModalBody>
 
