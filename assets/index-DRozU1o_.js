@@ -397,19 +397,7 @@ Please change the parent <Route path="${N}"> to <Route path="${N==="/"?"*":`${N}
   line-height: 1.5;
   padding-top: 2px;
   text-align: left;
-`;q.ul`
-  margin: 0;
-  padding-left: 20px;
-  color: #374151;
-  line-height: 1.6;
-`;q.li`
-  margin-bottom: 8px;
-  text-align: left;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-`;const bb=q.div`
+`,bb=q.div`
   padding: 0 24px 24px 24px;
   display: flex;
   justify-content: center;
