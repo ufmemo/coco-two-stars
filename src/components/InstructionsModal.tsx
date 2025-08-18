@@ -274,22 +274,6 @@ const StepText = styled.span`
   text-align: left;
 `;
 
-const TipList = styled.ul`
-  margin: 0;
-  padding-left: 20px;
-  color: #374151;
-  line-height: 1.6;
-`;
-
-const Tip = styled.li`
-  margin-bottom: 8px;
-  text-align: left;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-`;
-
 const ModalFooter = styled.div`
   padding: 0 24px 24px 24px;
   display: flex;
