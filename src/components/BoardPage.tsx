@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import styled from "styled-components";
 import { Board } from "./board";
+import { InstructionsModal } from "./InstructionsModal";
 import { boards, type BoardData } from "../boards";
 import { clearGameState } from "../utils/localStorage";
 
@@ -10,6 +11,7 @@ export function BoardPage() {
   const navigate = useNavigate();
   const [currentBoard, setCurrentBoard] = useState<BoardData | null>(null);
   const [boardKey, setBoardKey] = useState(0);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -40,7 +42,19 @@ export function BoardPage() {
       <Header>
         <BackLink to="/">← Back to Board Selection</BackLink>
         <Title>Two Stars Game</Title>
-        <CurrentBoard>Playing: {currentBoard.name}</CurrentBoard>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            justifyContent: "center",
+          }}
+        >
+          <CurrentBoard>Playing: {currentBoard.name}</CurrentBoard>
+          <InstructionsLink onClick={() => setShowInstructions(true)}>
+            📖 How to Play
+          </InstructionsLink>
+        </div>
       </Header>
 
       <NewGameButton onClick={handleNewGame}>New Game</NewGameButton>
@@ -48,6 +62,11 @@ export function BoardPage() {
         key={boardKey}
         board={currentBoard.board}
         boardId={currentBoard.id}
+      />
+
+      <InstructionsModal
+        isOpen={showInstructions}
+        onClose={() => setShowInstructions(false)}
       />
     </BoardPageContainer>
   );
@@ -89,6 +108,25 @@ const CurrentBoard = styled.div`
   font-weight: 500;
   @media (max-width: 768px) {
     display: none;
+  }
+`;
+
+const InstructionsLink = styled.button`
+  background: none;
+  border: none;
+  color: #2d5a27;
+  font-size: 18px;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: all 0.2s ease;
+  &:hover {
+    background-color: #f0f7f0;
+    text-decoration: none;
+  }
+
+  &:focus {
+    outline: 2px solid #2d5a27;
+    outline-offset: 2px;
   }
 `;
 

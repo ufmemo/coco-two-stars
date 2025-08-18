@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { boards } from "../boards";
 import { BoardStatusIcon } from "./BoardStatusIcon";
 import { ResetAllButton } from "./ResetAllButton";
+import { InstructionsModal } from "./InstructionsModal";
 import { getAllBoardStatuses } from "../utils/localStorage";
 import type { BoardStatus } from "../types/board";
 
@@ -11,6 +12,7 @@ export function Home() {
   const navigate = useNavigate();
   const [boardStatuses, setBoardStatuses] = useState<BoardStatus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   // Load board statuses on component mount
   const loadStatuses = () => {
@@ -63,6 +65,9 @@ export function Home() {
       <Header>
         <Title>Two Stars Game</Title>
         <Subtitle>Choose a board to start playing</Subtitle>
+        <InstructionsLink onClick={() => setShowInstructions(true)}>
+          📖 How to Play
+        </InstructionsLink>
       </Header>
 
       <ResetAllSection>
@@ -99,6 +104,11 @@ export function Home() {
           })
         )}
       </BoardGrid>
+
+      <InstructionsModal
+        isOpen={showInstructions}
+        onClose={() => setShowInstructions(false)}
+      />
     </HomeContainer>
   );
 }
@@ -121,6 +131,30 @@ const Subtitle = styled.p`
   color: #666;
   font-size: 1.2rem;
   margin: 0;
+`;
+
+const InstructionsLink = styled.button`
+  background: none;
+  border: none;
+  color: #2d5a27;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: #f0f7f0;
+    text-decoration: none;
+  }
+
+  &:focus {
+    outline: 2px solid #2d5a27;
+    outline-offset: 2px;
+  }
 `;
 
 const ResetAllSection = styled.div`
